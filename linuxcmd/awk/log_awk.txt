@@ -1,0 +1,3 @@
+awk '{if($3!="UpdateQuestStep"&&$3!="UpdateAntiAddictQueuePacket"){sum[$4]+=1}}END{for(i in sum)print i"\t"sum[i]}' 113001.log
+awk '{if($3=="[Info"){sum[$5]+=1}}END{for(i in sum){if(sum[i]>100)print i"\t"sum[i]}}' 113001.log >> 113001_3.txt
+

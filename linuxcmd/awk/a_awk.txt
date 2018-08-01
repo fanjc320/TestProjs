@@ -1,0 +1,1 @@
+awk '{if($1!="c"){sum[$2]+=1}}END{for(i in sum)print i"\t"sum[i]}' a.txt
