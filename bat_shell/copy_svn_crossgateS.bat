@@ -1,0 +1,1 @@
+copy E:\svn_1030\output\configs\table\* E:\CrossgateS\binExe\configs\table\* 
