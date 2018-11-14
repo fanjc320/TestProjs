@@ -27,6 +27,8 @@ int main()
 		cout <<"key  " << i.first<< ' ' << i.second<<endl;
 	}
 
+	//error C2676: binary '[': 'std::multimap<char,int,std::less<_Kty>,std::allocator<std::pair<const _Kty,_Ty>>>' does not define this operator or a conversion to a type acceptable to the predefined operator
+	//cout <<"mymm["b"]:"<< mymm["b"] << endl;
 	int i;
 	cin >> i;
 

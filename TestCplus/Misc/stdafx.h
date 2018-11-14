@@ -12,12 +12,27 @@ using namespace std;
 #include <iostream>
 #include <assert.h>
 #include <vector>
+#include <map>
+#include <set>
 #include <unordered_map>
 #include <unordered_set>
 #include <string>
-#include "TestTemplate.h"
+#include <typeinfo>
+#include <algorithm>
+#include <functional>
+
+
+#include "SingleList.h"
 #include "TestString.h"
 
+
+#pragma comment(lib, "shared.lib")
+#include "../sharedLib/sharedLib.h"
+
+
+int TestRemove();
+int TestUnique();
+int TestFor();
 
 
 

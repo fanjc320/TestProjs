@@ -30,10 +30,22 @@
     <ClCompile Include="TestString.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TestTemplate.cpp">
+    <ClCompile Include="ArgList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Misc.cpp">
+    <ClCompile Include="FjcTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="testTrim.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MiscMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Remove.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TestFor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -47,7 +59,7 @@
     <ClInclude Include="TestString.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TestTemplate.h">
+    <ClInclude Include="SingleList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
