@@ -1,5 +1,9 @@
 ﻿#pragma once
 
+#include <string>
+#include <map>
+using namespace std;
+
 #define foreach(container,it) \
     for(typeof((container).begin()) it = (container).begin();it!=(container).end();++it)
 

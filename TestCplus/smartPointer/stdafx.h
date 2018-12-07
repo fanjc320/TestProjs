@@ -9,6 +9,18 @@
 
 #include <stdio.h>
 #include <tchar.h>
+#include <iostream>
+using namespace std;
+
+
+int TestSharePtr();
+int TestUniquePtr();
+
+void TestShareFromThis();
+
+void TestSharedPtrCrossReference();
+
+void TestPoint2Add();
 
 
 

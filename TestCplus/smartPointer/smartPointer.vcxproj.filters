@@ -35,5 +35,8 @@
     <ClCompile Include="TestSharePtr.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\TestModule\TestUniquePtr\TestUniquePtr.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

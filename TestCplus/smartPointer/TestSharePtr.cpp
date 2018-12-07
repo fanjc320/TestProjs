@@ -43,7 +43,7 @@ void print_func(shared_ptr<int> p)                //使用shared_ptr作为函数参数
 		<< " v=" << *p << endl;
 }
 
-int main()
+int TestSharePtr()
 {
 	//// Good: the two shared_ptr's share the same object
 	//std::shared_ptr<Good> gp1 = std::make_shared<Good>();
@@ -101,8 +101,145 @@ int main()
 	*p1 = 100;
 	cout << *v[9] << endl;
 
-	
-	getchar();
 	return 0;
 }
 
+//.为何会出现这种使用场合
+//
+//因为在异步调用中，存在一个保活机制，异步函数执行的时间点我们是无法确定的，然而异步函数可能会使用到异步调用之前就存在的变量。
+//为了保证该变量在异步函数执期间一直有效，我们可以传递一个指向自身的share_ptr给异步函数，这样在异步函数执行期间share_ptr所管理的对象就不会析构，
+//所使用的变量也会一直有效了（保活）。
+//在智能指针的使用过程中我们会遇到这样一种情况，我们在类的成员函数调用某一个函数，而该函数需要传递一个当前对象的智能指针作为参数时，
+//我们需要能够在成员函数中获得自己的智能指针。在多线程编程中也存在这样的应用，如果我们的线程函数绑定的是一个类成员函数，
+//我们通过可以把该对象的智能指针作为参数传递到线程函数中，这种做法是人为的增加了对象的引用计数，延长对象的生命周期，
+//防止线程函数在执行的时候对象被释放而引发内存错误。总之就是我们在实际的编码中会存在各种各样的应用。
+//我们不能人为地通过this来构造一个当前对象的shared_ptr指针，如下错误的做法
+
+//class TestClass : public std::enable_shared_from_this<TestClass>
+//{
+//public:
+//	TestClass()
+//	{
+//	}
+//	~TestClass()
+//	{
+//		//TestClassPtr tt = shared_from_this();
+//	}
+//	void TestPtr()
+//	{
+//		std::shared_ptr<TestClass> tt = shared_from_this();
+//		Test(tt);
+//	}
+//}
+//
+//
+//int main()
+//{
+//	TestClass t;
+//	t.TestPtr(); //shared_from_this()错误
+//
+//	TestClass* t1(new TestClass());
+//	t1->TestPtr();//shared_from_this()错误
+//
+//	std::shared_ptr<TestClass> t2(new TestClass());
+//	t2->TestPtr(); //正确，已提前创建了shared_ptr
+//}
+
+//不能在构造函数\析构函数调用shared_from_this() 
+
+struct Good1 : std::enable_shared_from_this<Good1> // 注意：继承
+{
+public:
+	std::shared_ptr<Good1> getptr() {
+		return shared_from_this();
+	}
+	~Good1() { std::cout << "Good::~Good() called" << std::endl; }
+
+};
+void TestShareFromThis()
+{
+	std::shared_ptr<Good1> gp1(new Good1());
+	std::shared_ptr<Good1> gp2 = gp1->getptr();
+
+	std::cout << "pg1.use_count:" << gp1.use_count() << std::endl;
+	std::cout << "gp2.use_count:" << gp2.use_count() << std::endl;
+}
+
+
+
+class CLeader;
+class CMember;
+
+class CLeader
+{
+public:
+	CLeader() { cout << "CLeader::CLeader()" << endl; }
+	~CLeader() { cout << "CLeader:;~CLeader() " << endl; }
+
+	std::shared_ptr<CMember> member;
+};
+
+class CMember
+{
+public:
+	CMember() { cout << "CMember::CMember()" << endl; }
+	~CMember() { cout << "CMember::~CMember() " << endl; }
+
+	std::shared_ptr<CLeader> leader;
+};
+
+
+
+void TestSharedPtrCrossReference()
+{
+	cout << "TestCrossReference<<<" << endl;
+	shared_ptr<CLeader> ptrleader(new CLeader);
+	shared_ptr<CMember> ptrmember(new CMember);
+
+	ptrleader->member = ptrmember;
+	ptrmember->leader = ptrleader;
+
+	cout << "  ptrleader.use_count: " << ptrleader.use_count() << endl;
+	cout << "  ptrmember.use_count: " << ptrmember.use_count() << endl;
+
+}
+//从运行输出来看，两个对象的析构函数都没有调用，也就是出现了内存泄漏——原因在于：
+//TestSharedPtrCrossReference（）函数退出时，两个shared_ptr对象的引用计数都是2，所以不会释放对象；
+//这里出现了常见的交叉引用问题，这个问题，即使用原生指针互相记录时也需要格外小心；shared_ptr在这里也跌了跟头，ptrleader和ptrmember在离开作用域的时候，
+//由于引用计数不为1，所以最后一次的release操作（shared_ptr析构函数里面调用）也无法destroy掉所托管的资源。
+//为了解决这种问题，可以采用weak_ptr来隔断交叉引用中的回路。所谓的weak_ptr，是一种弱引用，表示只是对某个对象的一个引用和使用，而不做管理工作；
+
+
+class Point2
+{
+public:
+	Point2() : X(0), Y(0) { cout << "Point2::Point2(), (" << X << "," << Y << ")" << endl; }
+	Point2(int x, int y) : X(x), Y(y) { cout << "Point2::Point2(int x, int y), (" << X << "," << Y << ")" << endl; }
+	~Point2() { cout << "Point2::~Point2(), (" << X << "," << Y << ")" << endl; }
+
+public:
+	shared_ptr<Point2> Add(const Point2* rhs) { X += rhs->X; Y += rhs->Y; return shared_ptr<Point2>(this); }
+
+private:
+	int X;
+	int Y;
+};
+
+void TestPoint2Add()
+{
+	cout << endl << "TestPoint2Add() >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
+	shared_ptr<Point2> p1(new Point2(2, 2));
+	shared_ptr<Point2> p2(new Point2(3, 3));
+
+	//会崩掉：把一个指针赋值给了俩不共享的智能指针
+	//p1->Add(p2.get());
+	//p2.swap(p1->Add(p2.get()));
+}
+
+//输出为：
+//TestPoint2Add() >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >>
+//Point2::Point2(int x, int y), (2, 2)
+//Point2::Point2(int x, int y), (3, 3)
+//Point2::~Point2(), (3, 3)
+//Point2::~Point2(), (5, 5)
+//Point2::~Point2(), (3379952, 3211460)

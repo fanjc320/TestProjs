@@ -4,8 +4,20 @@
 #include "stdafx.h"
 
 
-//int main()
-//{
-//    return 0;
-//}
+int main()
+{
+	//TestSharePtr();
+	std::cout << "----------------------------" << endl;
+	TestUniquePtr();
+
+	std::cout << "============================" << endl;
+	//TestShareFromThis();
+	std::cout << "========-----------=========" << endl;
+	//TestSharedPtrCrossReference();
+
+	//TestPoint2Add();
+
+	getchar();
+    return 0;
+}
 
