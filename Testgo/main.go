@@ -1,7 +1,8 @@
 package main
 import "fmt"
 //import "./container"
-import "./TestFunc"
+//import "./TestFunc"
+import "./channel"
 
 func min(s ...int)int {
 	if len(s) == 0 {
@@ -25,6 +26,7 @@ func main(){
 	//container.TestMap()
 	//container.TestRange()
 	//container.TestHandle()
+
 	//----------------
 	//TestFunc.TestFunc()
 	//TestFunc.TestInterface()
@@ -36,5 +38,18 @@ func main(){
 	//TestFunc.TestInterface_Salary()
 	//TestFunc.TestInterface_TV()
 	//TestFunc.TestInterface_Type()
-	TestFunc.TestInterface_compare()
+	//TestFunc.TestInterface_compare()
+
+
+	//channel.TestGoroutine()
+
+	//channel.TestCh0()
+
+//	channel.TestCh1(0)
+//	fmt.Println("----------------------------")
+//	channel.TestCh1(3)
+
+	channel.TestCh_Select()
+
+
 }
