@@ -23,6 +23,7 @@ func main() {
 	fmt.Println("Create Goroutines")
 	go printPrime("A")
 	go printPrime("B")
+	go MyprintPrime("C")
 
 	// Wait for the goroutines to finish.
 	fmt.Println("Waiting To Finish")
@@ -40,7 +41,23 @@ next:
 	for outer := 2; outer < 5000; outer++ {
 		for inner := 2; inner < outer; inner++ {
 			if outer%inner == 0 {
-				continue next
+				continue next//跳到外层循环
+			}
+		}
+		fmt.Printf("%s:%d\n", prefix, outer)
+	}
+	fmt.Println("Completed", prefix)
+}
+
+func MyprintPrime(prefix string) {
+	// Schedule the call to Done to tell main we are done.
+	defer wg.Done()
+
+label:
+	for outer := 2; outer < 5000; outer++ {
+		for inner := 2; inner < outer; inner++ {
+			if outer%inner == 0 {
+				continue label
 			}
 		}
 		fmt.Printf("%s:%d\n", prefix, outer)

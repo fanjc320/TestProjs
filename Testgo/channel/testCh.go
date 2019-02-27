@@ -3,6 +3,7 @@ package channel
 import(
 	"fmt"
 	"time"
+	"sync"
 )
 
 
@@ -43,51 +44,60 @@ func TestCh1(cp int){
 	fmt.Println("main协程结束")
 }
 
-func TestCh(){
-	ch := make(chan int ,10)
-	ch <- 11
-	ch <- 12
-
-	close(ch)
-
-	x,ok := <-ch
-	fmt.Println(x,ok)
-
-	for x := range ch{
-		fmt.Println(x)
-	}
-}
-
-
+//死锁
 func TestCh_Block(){
-	ch_1 := make(chan int,3)
-	// blocked, read from empty buffered channel
-	<- ch_1
-	ch_2 := make(chan int, 3)
-	ch_2 <- 1
-	ch_2 <- 2
-	ch_2 <- 3
-	// blocked, send to full buffered channel
-	ch_2 <- 4
+	ch := make(chan string)
+	
+    // 在此处阻塞，然后程序会弹出死锁的报错
+	//ch <- "hello"
+
+	//放到groutine中则不会思索
+	go func(){
+		ch <- "hello"
+	}()
+	
+	h := <- ch
+    fmt.Println("channel has send data "+h)
 }
 
-func TestCh_Range(){
-	//channel 也可以使用 range 取值，并且会一直从 channel 中读取数据，直到有 goroutine 对改 channel 执行 close 操作，循环才会结束。
-	ch := make(chan int,10)
-	for x := range ch{
-		fmt.Println(x)
-	}
-	//等价于
-	for{
-		x,ok := <- ch
-		if !ok {
-			break
-		}
-		fmt.Println(x)
-	}
+func TestCh_Block1(){
+	ch := make(chan string)
+	go func(){
+		// 在执行到这一步的时候main goroutine才会停止阻塞
+        str := <- ch
+        fmt.Println("receive data：" + str)
+	}()
+
+	ch <- "hello"
+    fmt.Println("channel has send data")
 }
 
+func cal(a int,b int,n * sync.WaitGroup){
+	c := a+b
+	fmt.Printf("%d + %d = %d \n",a,b,c)
+	defer n.Done()
+}
 
-func TestCh_Timeout(){
+func TestCh_Sync(){
+	var go_sync sync.WaitGroup
+	for i:=0;i<10;i++{
+		go_sync.Add(1)//WaitGroup的计数加1
+		go cal(i,i+1,&go_sync)
+	}
+	go_sync.Wait()//等待
+}
 
+//单向
+func TestCh_OneDirection(){
+	ch := make(chan string)
+	go func(out chan<- string){
+		out <- "hello"
+	}(ch)
+	
+	go func(in <-chan string){
+		fmt.Println(in)
+		fmt.Println(<-in)
+	}(ch)
+
+	time.Sleep(2*time.Second)
 }

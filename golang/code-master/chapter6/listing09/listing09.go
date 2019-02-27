@@ -27,7 +27,7 @@ func main() {
 
 	// Wait for the goroutines to finish.
 	wg.Wait()
-	fmt.Println("Final Counter:", counter)
+	fmt.Println("Final Counter:", counter)//会出现可能2，3,4
 }
 
 // incCounter increments the package level counter variable.

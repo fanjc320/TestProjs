@@ -50,5 +50,16 @@ func main() {
 	fmt.Println("Waiting To Finish")
 	wg.Wait()
 
+	wg.Add(1)
+	go func(){
+		defer wg.Done()
+		for count:=0;count<1;count++{
+			for char := 'Z';char>'A';char--{
+				fmt.Printf("-%c ",char)
+			}
+		}
+	}()
+	wg.Wait()
+
 	fmt.Println("\nTerminating Program")
 }
