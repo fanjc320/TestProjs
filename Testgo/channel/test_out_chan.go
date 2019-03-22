@@ -34,7 +34,7 @@ func main() {
             }(stop)
         }
         waitForSignal()
-        close(stop)
+        close(stop)//回想stop管道发送消息
         fmt.Println("stopping all jobs!")
 
         var input string

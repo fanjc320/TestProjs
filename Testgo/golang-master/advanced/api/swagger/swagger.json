@@ -1,0 +1,242 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "beego API",
+        "description": "beego useful api demo",
+        "version": "1.0.0",
+        "contact": {
+            "email": "lizhonglin_melody@yeah.net"
+        }
+    },
+    "basePath": "/v1",
+    "paths": {
+        "/user/add": {
+            "post": {
+                "tags": [
+                    "user"
+                ],
+                "description": "create user",
+                "operationId": "UserController.Add A User",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "username",
+                        "description": "username",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "gender",
+                        "description": "gender",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "age",
+                        "description": "age",
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "in": "query",
+                        "name": "address",
+                        "description": "address",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "email",
+                        "description": "email",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "phone",
+                        "description": "phone",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{string} uid"
+                    },
+                    "400": {
+                        "description": "{error} err"
+                    }
+                }
+            }
+        },
+        "/user/all": {
+            "get": {
+                "tags": [
+                    "user"
+                ],
+                "description": "Get All The Users",
+                "operationId": "UserController.Get All Users",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/*Users"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "{error} err"
+                    }
+                }
+            }
+        },
+        "/user/delete": {
+            "get": {
+                "tags": [
+                    "user"
+                ],
+                "description": "Get  The Users",
+                "operationId": "UserController.Delete One Users",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "uid",
+                        "description": "id",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{string} \"delete success\""
+                    },
+                    "400": {
+                        "description": "{error} err"
+                    }
+                }
+            }
+        },
+        "/user/login": {
+            "post": {
+                "tags": [
+                    "user"
+                ],
+                "description": "Get  The Users",
+                "operationId": "UserController.Delete One Users",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "phone",
+                        "description": "phone",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "code",
+                        "description": "false",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{string} \"{\\\"status_code\\\":\\\"200\\\",\\\"message\\\":\\\"login success\\\"}\""
+                    },
+                    "400": {
+                        "description": "{string} \"{\\\"status_code\\\":\\\"400\\\",\\\"message\\\":\\\"login failed\\\"}\""
+                    }
+                }
+            }
+        },
+        "/user/one": {
+            "get": {
+                "tags": [
+                    "user"
+                ],
+                "description": "Get  The Users",
+                "operationId": "UserController.Get One Users",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "uid",
+                        "description": "id",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/*Users"
+                        }
+                    },
+                    "400": {
+                        "description": "{error} err"
+                    }
+                }
+            }
+        },
+        "/user/update": {
+            "post": {
+                "tags": [
+                    "user"
+                ],
+                "description": "Update user",
+                "operationId": "UserController.Update A User",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "uid",
+                        "description": "id",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "username",
+                        "description": "username",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "gender",
+                        "description": "gender",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "age",
+                        "description": "age",
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "in": "query",
+                        "name": "address",
+                        "description": "address",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "email",
+                        "description": "email",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/*Users"
+                        }
+                    },
+                    "400": {
+                        "description": "{error} err"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "*Users": {
+            "title": "*Users",
+            "type": "object"
+        }
+    }
+}

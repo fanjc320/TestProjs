@@ -12,6 +12,7 @@ func Test(rchan chan int){
 		select{
 		case d:= <-rchan:
 			limitChan <- true
+			
 			go A()
 		case <-t:
 			showGoNum()

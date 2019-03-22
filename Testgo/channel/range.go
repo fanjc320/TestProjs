@@ -33,6 +33,45 @@ func TestCh_Range(){
 	fmt.Println("-----########----------")
 }
 
+func TestCh_Range1() {
+	cs := make(chan string)
+    go receiveCakeAndPack1(cs)
+	go makeCakeAndSend1(cs, 10)
+	fmt.Println("===============")
+	go makeCakeAndSend1(cs, 5)
+
+    //sleep for a while so that the program doesn’t exit immediately
+    time.Sleep(3 * 1e9)
+}
+
+
+//数据接受者总是面临这样的问题：何时停止等待数据？还会有更多的数据么，还是所有内容都完成了？我应该继续等待还是该做别的了？
+//对于该问题，一个可选的方式是，持续的访问数据源并检查channel是否已经关闭，但是这并不是高效的解决方式。Go提供了range关键字，将其使用在channel上时，会自动等待channel的动作一直到channel被关闭
+
+func TestCh_Range2(){
+	data := make(chan int)
+	exit := make(chan bool)
+	
+	go func(){
+		for v:= range data{
+			println(v)
+		}
+
+		println("receive over")
+		exit <- true
+	}()
+
+	data <- 1
+	data <- 2
+	data <- 3
+
+	time.Sleep(1*time.Second)
+	close(data)
+
+	println("send over")
+	<-exit
+}
+
 func makeCakeAndSend1(cs chan string, count int) {
     for i := 1; i <= count; i++ {
         cakeName := "Strawberry Cake " + strconv.Itoa(i)
@@ -47,18 +86,6 @@ func receiveCakeAndPack1(cs chan string) {
         fmt.Println("Packing received cake: ", s)
     }
 }
-
-func TestCh_Range1() {
-	cs := make(chan string)
-    go receiveCakeAndPack1(cs)
-	go makeCakeAndSend1(cs, 10)
-	fmt.Println("===============")
-	go makeCakeAndSend1(cs, 5)
-
-    //sleep for a while so that the program doesn’t exit immediately
-    time.Sleep(3 * 1e9)
-}
-
 
 //实际上，有经验的Gopher一眼就能发现，示例代码1中的channel是没有正确关闭的，在for range语句的执行一直没有停止因为channel一直存在而没有被关闭，只不过随着time.Sleep()结束，main函数退出，所有的goroutine被关闭，该语句也被结束了而已
 //正确的解决步骤：
@@ -109,6 +136,19 @@ func TestCh_Err1(){
 func main(){
 	//TestCh_Range()
 	//TestCh_Range1()
+	TestCh_Range2()
 	//TestCh_Err()
-	TestCh_Err1()
+	//TestCh_Err1()
 }
+
+//fjc
+//函数里的每一步代码都可能是转到别的许多go程运行之后再回来的结果，别的go程肯能运行的也是这个函数
+//只有在本go程之内，代码的执行顺序才是顺序的
+
+//同一段代码启动的go程，不能判定先后执行顺序
+//要假设groutine的生命周期是很长的，a和b两个goroutine,因为groutine的结束只能有自身决定，1.a在结束的同时启动b，
+//2.别的goroutine在channel中收到a结束，之后再启动b 那么a和b在运行时就可能是存在生命周期交集的
+//由于存在生命周期交集，那么并发的问题都可能有
+//一个go程在运行一段代码后运行新的go程，那么新代码部分是并发的
+//并行和并发除了效率上的不同，对程序员来说在编程时都是不能假定顺序的
+//两个go程的声明周期可能存在交集，就要考虑并发的影响
